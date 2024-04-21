@@ -23,3 +23,8 @@
 14. kubectl version
 15. kubectl get all --all-namespaces
     ( Now you are good to go with microk8s with kubectl ) 
+
+# commands for helm 
+1. helm create helloworld ( this will create helloworld dir with all required yamls files )
+2. helm install myhellowordl --debug --dry-run helloworld
+3. 
