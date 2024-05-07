@@ -41,3 +41,9 @@ Purpose: An interface is used to achieve abstraction and multiple inheritance in
 Method: An interface can have any number of methods, but Runnable interface has only one method, run().  
 Usage: Any interface can be implemented by any class to use the methods declared in the interface. Runnable is specifically implemented by classes that are intended to be executed by a thread.  
 Functional Interface: Runnable is a functional interface, meaning it has exactly one abstract method. This makes it a good fit for use with lambda expressions in Java 8 and beyond. A general interface is not necessarily a functional interface.
+
+
+# Three types of interface 
+1. Consumer interface take only one argument and returns nothing ... Consumer<T> and has only one method accept( Object)
+2. Function interface take two argument first one is input type and second one is the output type .... Function <T,F> and has only one method accept ...
+3. Supplier interface take only one argument and has only one method "get()" .. Supplier<T> ...
