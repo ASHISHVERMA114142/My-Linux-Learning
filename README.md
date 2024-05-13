@@ -78,4 +78,34 @@ For more details commands cheat sheet -> https://www.hackingnote.com/en/cheatshe
        ex-> kind get node --context kind-mycluster
 9. k config get-contexts 
 10. k config use-context kind-kind
-11. kubecte get nodes -o wide 
+11. kubecte get nodes -o wide
+# why we load docker image to our cluster ??
+
+Loading a Docker image into your Kubernetes cluster is necessary because Kubernetes uses the images to create containers, which are the fundamental units of deployment in a Kubernetes environment. By loading the image into the cluster, you ensure that the image is available to Kubernetes when creating pods, services, or other Kubernetes resources.
+
+1. Load the Docker image into your Kubernetes 
+cluster: kind load docker-image sleepy:latest
+2. Verify the image is available in the cluster: kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{.spec.containers[*].image}{"\n"}{end}'
+
+# what happen if we dont load docker image to our cluster??
+
+If you don't load Docker images to your cluster, Kubernetes will not be able to create containers using those images. When you create a pod, Kubernetes will try to pull the specified image from a container registry, and if it fails to find the image, it will not be able to create the container.
+
+Here's an example of a YAML manifest for a pod that uses a Docker image:
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sleepy
+spec:
+  containers:
+  - name: sleepy
+    image: sleepy:latest
+    imagePullPolicy: Never
+
+In this example, the image field specifies the Docker image sleepy:latest. If you haven't loaded this image to your cluster, Kubernetes will not be able to create the container.
+
+To avoid this issue, you can load the Docker image to your cluster using the kind load command, as I explained in my previous response. Alternatively, you can set the imagePullPolicy to Never or IfNotPresent, and Kubernetes will use the local image if it exists.
+
+# docker exec -it my-node-name crictl images
+Replace my-node-name with the name of the Docker container for the cluster node. This command will display a list of all the Docker images present on the cluster node.
