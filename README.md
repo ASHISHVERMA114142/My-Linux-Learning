@@ -109,3 +109,6 @@ To avoid this issue, you can load the Docker image to your cluster using the kin
 
 # docker exec -it my-node-name crictl images
 Replace my-node-name with the name of the Docker container for the cluster node. This command will display a list of all the Docker images present on the cluster node.
+
+#docker short tutorial 
+https://www.hostinger.in/tutorials/docker-cheat-sheet?utm_campaign=Generic-Tutorials-DSA|NT:Se|LO:IN-t2&utm_medium=ppc&gad_source=1&gclid=EAIaIQobChMIkNf7oPSrhgMV1mwPAh2d6QA7EAAYASAAEgIJnfD_BwE
