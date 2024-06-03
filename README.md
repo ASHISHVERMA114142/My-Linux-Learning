@@ -112,3 +112,11 @@ Replace my-node-name with the name of the Docker container for the cluster node.
 
 #docker short tutorial 
 https://www.hostinger.in/tutorials/docker-cheat-sheet?utm_campaign=Generic-Tutorials-DSA|NT:Se|LO:IN-t2&utm_medium=ppc&gad_source=1&gclid=EAIaIQobChMIkNf7oPSrhgMV1mwPAh2d6QA7EAAYASAAEgIJnfD_BwE
+
+#DevTools settings 
+spring.devtools.restart.poll-interval=2s
+spring.devtools.restart.quiet-period=1s     
+
+#spingboot application with mongodb container 
+https://github.com/The-Tech-Tutor/mongo
+https://www.linkedin.com/pulse/get-started-spring-boot-mongodb-docker-compose-saeid-farahi
