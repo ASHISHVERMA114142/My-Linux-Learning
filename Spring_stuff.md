@@ -22,3 +22,25 @@ let say we have 3 service  serviceA,serviceB,ServiceC  and inside our controller
 @Autowired
 @Qualifier("ServiceC")
 private Service service;
+
+# How many types of variable in java ?
+There are mainly three types of variable in java . 
+## 1. Local Variable : Local variables are defined inside a method, constructor, or block. They are implemented at stack level internally. There is no default value for local variables, so local variables should be declared and an initial value should be assigned before the first use.
+For Example : 
+'''java
+public class Test{
+ void printAge(){
+  int age;
+  age=age+10;
+  System.out.println("age : {}",age);
+  }
+  public static void main(String args[]){
+  Test test=new Test();
+  // this line will give error as there is no predefined value assigned by the java compiler at the time of variable creation so this will throw error . 
+  test.printAge();
+  }
+}
+
+## 2. Instance Variable : These variables are defined outside of the fucntion and it is part of class not a any methond . so if we create two object then inside heap memory section separate space will be created for both of the object variable . 
+
+## 3. Static Variable: These variable are part of the class . it means every object will share a single copy of that object and to access this variable we don't need any object of the class. 
