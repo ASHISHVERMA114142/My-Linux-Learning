@@ -124,3 +124,24 @@ https://www.linkedin.com/pulse/get-started-spring-boot-mongodb-docker-compose-sa
 
 # how to install bats 
 https://bats-core.readthedocs.io/en/stable/installation.html
+
+#possible way to remove dependency of the jxpath on jdom v1.1.3
+
+<dependencies>
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>jxpath</artifactId>
+        <version>1.3</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.jdom</groupId>
+                <artifactId>jdom</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>2.0.0</version>
+    </dependency>
+</dependencies>
