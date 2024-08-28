@@ -145,3 +145,6 @@ https://bats-core.readthedocs.io/en/stable/installation.html
         <version>2.0.0</version>
     </dependency>
 </dependencies>
+
+docker compose -p project-name ps my-service --format json | jq -r 'arrays | .[0] | .Name'
+docker compose -p project-name ps my-service --format json | jq -r 'if type == "array" then .[0].Name else .Name end'
