@@ -1,0 +1,3 @@
+# what is the difference between Enumeration and Iteration
+  Enumeration Enumeration is a legacy interface in Java that provides a way to iterate over a collection of objects, typically used with legacy collections such as Vector, Hashtable, and Stack. It has two methods: hasMoreElements() and nextElement(), and is a "pull" model where the caller has to explicitly ask for the next element.
+  Iteration Iteration is a modern concept in Java that allows you to traverse a collection of objects using an Iterator, typically used with modern collections such as ArrayList, LinkedList, HashSet, and TreeSet. It has three methods: hasNext(), next(), and remove(), and is also a "pull" model where the caller has to explicitly ask for the next element.
