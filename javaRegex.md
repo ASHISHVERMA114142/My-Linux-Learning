@@ -2,3 +2,5 @@
 
 #what is regex ?
 A regular expression is a sequence of characters that construct a search patten . when you search for data in a text , you can use this search pattern to describe what you are looking for ....
+
+
