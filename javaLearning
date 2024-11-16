@@ -1,3 +1,66 @@
 # what is the difference between Enumeration and Iteration
   Enumeration Enumeration is a legacy interface in Java that provides a way to iterate over a collection of objects, typically used with legacy collections such as Vector, Hashtable, and Stack. It has two methods: hasMoreElements() and nextElement(), and is a "pull" model where the caller has to explicitly ask for the next element.
   Iteration Iteration is a modern concept in Java that allows you to traverse a collection of objects using an Iterator, typically used with modern collections such as ArrayList, LinkedList, HashSet, and TreeSet. It has three methods: hasNext(), next(), and remove(), and is also a "pull" model where the caller has to explicitly ask for the next element.
+
+
+# what is difference between primitive data Types and wrapper class in java ?
+1. Primitive Data Types:
+Primitive data types in Java are the most basic data types that are directly supported by the Java language. These types are not objects and are stored in memory as raw values. Java has 8 primitive data types:
+
+benefits : 
+1. Memory-efficient: They are stored directly in memory as raw values, making them fast and low-overhead.
+2. No Methods: Primitive types don't have methods or properties. They are simple values.
+3. Default Values: Primitive types have default values when they are declared but not initialized (e.g., 0 for numeric types, false for boolean).
+
+2. Wrapper Classes:
+Wrapper classes are object representations of the primitive data types. They allow primitive types to be treated as objects, and they are part of the java.lang package. These classes are used in situations where an object is required, such as when working with collections (like ArrayList) or using methods that require objects.
+benefits: 
+1. Conversion: Wrapper classes provide methods for converting between primitive types and their corresponding objects.
+Example: int x = 100; Integer obj = Integer.valueOf(x); (primitive to wrapper class)
+Example: int y = obj.intValue(); (wrapper class to primitive)
+Nullability: While primitive types can't be null, wrapper objects can. This makes wrapper classes useful in situations where you need to represent "no value" or missing data.
+
+2. Autoboxing and Unboxing: Java automatically converts between primitive types and their wrapper classes when needed, a feature called autoboxing and unboxing:
+   Autoboxing: The automatic conversion from a primitive to its corresponding wrapper class.
+   Example: Integer obj = 10; (primitive 10 is autoboxed to Integer object)
+   Unboxing: The automatic conversion from a wrapper class to its corresponding primitive type.
+   Example: int value = obj; (unboxing Integer to int)
+3. Utility Methods: Wrapper classes often provide useful methods. For example:
+   Integer.parseInt(String) for converting a string to an integer.
+   Double.isNaN() for checking if a double value is NaN (Not-a-Number).
+
+# what is the basic diff between autoboxing and unboxing ?
+
+AutoBoxing :
+ autoboxing is the process of converting the primiter datatype to its corresponding wrapper class. In simple words we are creating object version of the primitive datatype . 
+Unboxing : 
+unboxing is the just reverse process of autoboxing , conversion from the wrapper class object to its primitive datatype is called unboxing . In simple words conversion form object version of datatype to its primitve datatype . 
+
+Profit & loss : 
+1. simple code : autoboxing and unboxing give use simple code as  we don't have to do it manually . it reduces of overhead of conversion between two of them .
+2. performance issue : conversion takes time that can reduce the performance . 
+3. nullPointerExceptions : unboxing can give us null pointer exception as primitive datatypes can not hold "null" values so unboxing can give us exception.
+
+# what volatile in java ?
+volatile in java can be understood by multi-threading , let say we have to 2 threads on thread is making change on x variable and second thread is reading that variable x , now as we know each cpu has its local cache
+that is used by the cpu only and if we have defined variable that is used by thread-1 in cpu-1 if that variable is modified in local cache of cpu-1 it will instantly updated inside the shared-cache that will be visible to 
+thread-2 , so it can use the latest value of x whenever it will change in value . 
+
+Key Characteristics of volatile:
+Visibility Guarantee:
+When a variable is declared as volatile, it guarantees that any read or write operation on that variable will always access the most recent value from the main memory. This ensures that changes made by one thread to the volatile variable are immediately visible to other threads.
+
+No Caching:
+Without volatile, threads may hold a local copy of a variable in their CPU cache, and changes made by one thread might not be reflected in other threads immediately, leading to inconsistent or stale data. With volatile, the JVM ensures that every read or write of a volatile variable goes directly to and from the main memory, bypassing the local cache.
+
+Atomicity for Reads and Writes:
+The volatile keyword ensures atomicity for reads and writes of the variable, meaning that each individual read and write operation is atomic (i.e., it is done in a single step without interference from other threads). However, volatility does not make compound actions like increment (x++) or check-then-act operations atomic. For example, the statement x++ is not thread-safe even when x is volatile.
+
+No Locks:
+A volatile variable does not introduce any locking mechanism (e.g., it doesn't use synchronized blocks). However, it ensures that all threads see a consistent value of the variable without the overhead of using locks.
+
+# when we should use volatile ? 
+volaile is can be used on simple flags or shared state that should be visible to all the threads . 
+best example could be the reader and writer thread let say we have two thread that so one thread is reading second should not be write so for this purpose we can use volatile variable that will read by the reader thread 
+once write will finish its operations i will update and that will be singnal to write thread . 
+
