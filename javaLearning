@@ -64,3 +64,58 @@ volaile is can be used on simple flags or shared state that should be visible to
 best example could be the reader and writer thread let say we have two thread that so one thread is reading second should not be write so for this purpose we can use volatile variable that will read by the reader thread 
 once write will finish its operations i will update and that will be singnal to write thread . 
 
+
+----------------------------
+what is coupling in java ?
+ans - Coupling refers to the knowledge or information or dependency of another class. It arises when classes are aware of each other. If a class has the details information of another class, there is strong coupling. In Java, we use private, protected, and public modifiers to display the visibility level of a class, method, and field. We can use interfaces for the weaker coupling because there is no concrete implementation
+There are two types of coupling in java 
+1. strong coupling 
+2. weak coupling 
+
+1. strong coupling -In strong coupling, one class directly uses the concrete implementation of another class, which creates a dependency between them  . 
+2. weak coupling - In weak coupling, we use interfaces, which allows one class to depend on the interface rather than a concrete class. This reduces the dependency and allows for flexibility.
+examples :
+// Define an interface to decouple the classes
+interface MessageService {
+    void showMessage();
+}
+
+// Concrete implementation of MessageService
+class B implements MessageService {
+    @Override
+    public void showMessage() {
+        System.out.println("Hello from class B");
+    }
+}
+
+// Class A depends on the interface, not a concrete class
+class A {
+    private MessageService messageService;
+
+    // Constructor accepts any implementation of MessageService (loose coupling)
+    public A(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    public void displayMessage() {
+        messageService.showMessage(); // Using the interface
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MessageService b = new B(); // Could also be a different implementation
+        A a = new A(b);
+        a.displayMessage(); // Output: Hello from class B
+    }
+}
+Explanation of Weak Coupling:
+Interface MessageService defines the contract without specifying any concrete implementation.
+Class B implements this interface and provides the actual behavior for showMessage().
+Class A depends on MessageService rather than a specific class like B. This allows class A to interact with any class that implements MessageService.
+
+
+--------------------
+what is difference between object oriented programming and object based programming language ? 
+ans - only diff between oop and obj oriented programming is inheritance , 
+javascript and vb 
