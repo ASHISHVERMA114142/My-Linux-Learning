@@ -137,3 +137,9 @@ In java programming, multiple and hybrid inheritance is supported through interf
 
 Benefits of Inheritance
 Polymorphism: Subclasses can override superclass methods, allowing for polymorphic behavior, where methods can behave differently based on the object type at runtime.
+
+
+-------------------
+Q) Why Method Overloading is not possible by changing the return type of method only?
+Method overloading in Java is based on the method signature, which includes the method name and parameter list. The return type alone is not sufficient to distinguish between overloaded methods because Java does not consider the return type 
+when resolving method calls. If two methods have the same name and parameter list but different return types, the compiler cannot determine which method to call based solely on the return type. Let's see how ambiguity may occur:
