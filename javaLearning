@@ -119,3 +119,21 @@ Class A depends on MessageService rather than a specific class like B. This allo
 what is difference between object oriented programming and object based programming language ? 
 ans - only diff between oop and obj oriented programming is inheritance , 
 javascript and vb 
+
+----------------------
+Why use inheritance in Java?
+
+For Method Overriding (so runtime polymorphism can be achieved).
+For Code Reusability.
+
+--------------------------
+
+Types of Inheritance in Java
+On the basis of class, there can be three types of inheritance in java: single, multilevel and hierarchical.
+
+In java programming, multiple and hybrid inheritance is supported through interface only. We will learn about interfaces later.
+
+----------------------------
+
+Benefits of Inheritance
+Polymorphism: Subclasses can override superclass methods, allowing for polymorphic behavior, where methods can behave differently based on the object type at runtime.
