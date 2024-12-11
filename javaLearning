@@ -140,6 +140,73 @@ Polymorphism: Subclasses can override superclass methods, allowing for polymorph
 
 
 -------------------
+Best Practices for Using Inheritance
+While inheritance is a powerful tool, its misuse can lead to code complexity and tight coupling. Here are some best practices to consider:
+
+Favor Composition Over Inheritance: When possible, prefer composition, where classes are composed of other classes, over inheritance. This approach often leads to more flexible and maintainable code.
+
+Follow the "is-a" Relationship: Ensure that inheritance relationships adhere to the "is-a" principle, where a subclass represents a more specialized version of its superclass.
+
+Use Abstract Classes and Interfaces Wisely: Abstract classes and interfaces provide blueprints for subclasses. Use abstract classes when you want to provide a default implementation or share code among related subclasses. Use interfaces to define contracts that classes can implement, enabling multiple inheritance through interfaces.
+
+Avoid Deep Inheritance Hierarchies: Deep inheritance hierarchies can make code difficult to understand and maintain. Aim for shallow hierarchies whenever possible.
+
+Prefer Composition for Code Reuse: Instead of relying solely on inheritance for code reuse, consider using composition alongside inheritance to achieve better flexibility and modularity.
+
+
+-----------------------------
+Aggregation in Java
+If a class have an entity reference, it is known as Aggregation. Aggregation represents HAS-A relationship.
+
+Consider a situation, Employee object contains many informations such as id, name, emailId etc. It contains one more object named address, which contains its own informations such as city, state, country, zipcode etc.
+
+When use Aggregation?
+Code reuse is also best achieved by aggregation when there is no is-a relationship.
+Inheritance should be used only if the relationship is-a is maintained throughout the lifetime of the objects involved; otherwise, aggregation is the best choice.
+
+----------------------
+
 Q) Why Method Overloading is not possible by changing the return type of method only?
 Method overloading in Java is based on the method signature, which includes the method name and parameter list. The return type alone is not sufficient to distinguish between overloaded methods because Java does not consider the return type 
 when resolving method calls. If two methods have the same name and parameter list but different return types, the compiler cannot determine which method to call based solely on the return type. Let's see how ambiguity may occur:
+
+--------------------------
+Q) can we overload the main method in java ??
+Ans ) -> yes overloading the main method is posssible in java , you have can have multiple main method with the same name "main" but different argument , but when you run the program only the main method with signature 
+" public static void main(String []args) " will be called first ..
+-------------------
+Q) what is type promotion in java ??
+Ans -> TypePromotion is inbuild feature of java when One type is promoted to another implicitly if no matching datatype is found. 
+let say we have a funtion to sum the two interger but when we call that function with char dataType it will automatically convert char into int dataType . this is called type promoton . Type promotion only happens from
+lower datatype to higher dataType ..
+--------------------
+Q) What is the best example of method overriding ?
+ans -> let say for any app there are two types of customer one is normal user and one is preminum user . So for any purchase you want to give some discount to your preminum user so that they get more benefit so in order to 
+do that we can override the offer method that is already present inside the user method and apply extra n% of discount to them . 
+---------------------
+Q) Can we override the static method?
+No, a static method cannot be overridden in Java. When a subclass defines a static method with the same signature as a static method in its superclass, it is simply hiding the superclass method, not overriding it. 
+This means that the method invoked is determined at compile time based on the reference type, not at runtime based on the object's type. Therefore, static methods do not exhibit polymorphic behavior like instance methods
+do.
+-------------------------
+Q) Why can we not override static method?
+Because static methods in Java are linked to the class itself rather than any specific instance of the class, we are unable to override them. Java's dynamic dispatch mechanism, which determines the 
+method to be called at runtime depending on the object's actual type, forms the foundation for method overriding.
+Static methods cannot be overridden in the same manner as instance methods since they are not subject to dynamic dispatch because they are resolved at compile time based on the reference type and are part of the class.
+Furthermore, while instance methods are kept in the object's heap area and are specific to each instance of the class, static methods are kept in the method region of the JVM's memory,
+which is shared by all instances of the class. Static methods cannot be altered due to the basic differences in their behaviour and memory allocation between instance and static methods.
+------------
+Q) Can we override Java main() method?
+No, because the Java main() method is designated as static, we are unable to override it.
+---------------------
+Q) Java Access Modifiers with Method Overriding
+If you are overriding any method, overridden method (i.e. declared in subclass) must not be more restrictive.
+-------------------------------
+Q) Rules for Java Method Overridingh2h3>
+Same Method Name: The overriding method in the subclass must have the same name as the method in the superclass that it is overriding.
+Same Parameters: The overriding method must have the same number and types of parameters as the method in the superclass. This ensures compatibility and consistency with the method signature defined in the superclass.
+IS-A Relationship (Inheritance): Method overriding requires an IS-A relationship between the subclass and the superclass. This means that the subclass must inherit from the superclass, either directly or indirectly, to override its methods.
+Same Return Type or Covariant Return Type: The return type of the overriding method can be the same as the return type of the overridden method in the superclass, or it can be a subtype of the return type in the superclass. This is known as the covariant return type, introduced in Java 5.
+Access Modifier Restrictions: The access modifier of the overriding method must be the same as or less restrictive than the access modifier of the overridden method in the superclass. Specifically, a method declared as public in the superclass can be overridden as public or protected but not as private. Similarly, a method declared as protected in the superclass can be overridden as protected or public but not as private. A method declared as default (package-private) in the superclass can be overridden with default, protected, or public, but not as private.
+No Final Methods: Methods declared as final in the superclass cannot be overridden in the subclass. This is because final methods cannot be modified or extended.
+No Static Methods: Static methods in Java are resolved at compile time and cannot be overridden. Instead, they are hidden in the subclass if a method with the same signature is defined in the subclass.
