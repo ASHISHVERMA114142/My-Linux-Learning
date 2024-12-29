@@ -4,31 +4,32 @@
 Java’s java.util package includes the PriorityQueue class, implementing a priority queue via a binary heap. Elements within this priority queue are ordered based on their natural ordering or a provided comparator.
 It is easy to create "min heap " in java ,
 Example : 
-  PriorityQueue<Integer> q = new PriorityQueue();
+  PriorityQueue<Integer> q = new PriorityQueue<>();
 
 But in order to create Max Heap you have to create Comparator there are few ways to do that . 
 1. By extending comparator class - We can simple extend Comparator class that is present inside java.util.Comparator
    Ex-
-   '''java
+   ''' java
    import java.util.Comparator;
    public class MyComparator extends Comparator<Integer> {
      public int compare(Integer x, Integer y){
      return y-x;
      }
    }
+   
    To call this comparator we have to provide initial size of the PriorityQueue that will extend in future with Object of your comparator .
 
-   PriorityQueue < Integer > q = new PriorityQueue< size , new MyComparator() ) ;
+   PriorityQueue < Integer > q = new PriorityQueue<>( size , new MyComparator() ) ;
 
-2. Insted of creating our custom comparator we can use Collections.reverseOrder() funtion to get the Max Heap .
+3. Insted of creating our custom comparator we can use Collections.reverseOrder() funtion to get the Max Heap .
    Ex-
 
-   PriorityQueue <Integer> q =new PriorityQueue<size, Collections.reverseOrder());
+   PriorityQueue <Integer> q =new PriorityQueue<>(size, Collections.reverseOrder());
 
-3. Using lamda expression on the PriorityQueue instead of creating any kind of Comparator .
+4. Using lamda expression on the PriorityQueue instead of creating any kind of Comparator .
    Ex -
 
-   PriorityQueue < Integer > q = new PriorityQueue ( size , ( o1 , o2 ) -> o2 - o1 );
+   PriorityQueue < Integer > q = new PriorityQueue<> ( size , ( o1 , o2 ) -> o2 - o1 );
 
 
 ## some common methods are 
