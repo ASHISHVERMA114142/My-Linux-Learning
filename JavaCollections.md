@@ -48,5 +48,22 @@ But in order to create Max Heap you have to create Comparator there are few ways
 | `comparator()`          | Returns the comparator used to order the elements in the queue, or `null` if the elements are ordered by their natural ordering. |
 | `forEach(Consumer<? super E> action)` | Performs the given action for each element of the priority queue. |
 
+# How comparator works 
+Comparate works in simple logic 
+we can see the inside the compare function will return int value that could be +ve , -ve or 0 
+if it returns +ve then the swap will not happen 
+if it return -ve the the swap will happen
+if it return 0 then no changes 
+
+1. Ascending Order: return num1 - num2;
+   If num1 is smaller than num2, the result is negative (order them as num1 < num2).
+2. Descending Order: return num2 - num1;
+   If num1 is smaller than num2, the result is positive (order them as num2 < num1).
+
+After java 8+ we can use lamba expression to directly use comparator 
+like this - 
+Comparator<Integer> ascendingComparator = (num1, num2) -> num1 - num2;
+                       or 
+Comparator<Integer> descendingComparator = (num1, num2) -> num2 - num1;
 
 # what is difference between comparable and comparator ? 
