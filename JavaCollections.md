@@ -61,9 +61,9 @@ if it return 0 then no changes
    If num1 is smaller than num2, the result is positive (order them as num2 < num1).
 
 After java 8+ we can use lamba expression to directly use comparator 
-like this - 
-Comparator<Integer> ascendingComparator = (num1, num2) -> num1 - num2;
-                       or 
-Comparator<Integer> descendingComparator = (num1, num2) -> num2 - num1;
+like this -  
+Comparator<Integer> ascendingComparator = (num1, num2) -> num1 - num2;  
+                       or   
+Comparator<Integer> descendingComparator = (num1, num2) -> num2 - num1;  
 
 # what is difference between comparable and comparator ? 
