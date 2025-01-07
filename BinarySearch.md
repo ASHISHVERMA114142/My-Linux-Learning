@@ -19,11 +19,11 @@ LT - 33
 ```
 ### 2. for finding next greater element or just less element inside array . 
 let say we have sorted array that are arranged in increasing order 
-nums= 1,3,5,9 
-target = 2
+nums= 1,3,5,9  
+target = 2  
 In this case returning "left" at the end will give us either target or just greater element that is present on the array .  
-Returning "right" will give us either target or just smaller element that is present on the array . 
-LT - 35
+Returning "right" will give us either target or just smaller element that is present on the array .  
+LT - 35  
 ```java
     public int searchInsert(int[] nums, int target) {
         int left=0,right=nums.length-1;
