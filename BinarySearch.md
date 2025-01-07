@@ -1,3 +1,3 @@
-```python
-def greet(name):
-    return f"Hello, {name}!"
+```java
+int binarySearch(int nums[],int target){
+
