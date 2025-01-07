@@ -2,9 +2,9 @@
 There are many features of the binary search algorithm . 
 
 ### 1. If array is sorted . 
-Ex : below code will find exactly target element is inside array or not . 
-LT - 704
-LT - 33
+Ex : below code will find exactly target element is inside array or not .    
+LT - 704  
+LT - 33  
 ```java
     public int binarySearch(int[] nums, int target) {
         int left=0,right=nums.length-1;
