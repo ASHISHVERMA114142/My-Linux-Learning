@@ -56,7 +56,7 @@ git checkout adfaljadfakjdfieadaf first.txt
 ```
 
 ## How i can setup aliase for git commands .
-This can be done by git config --global alias.<--> "Your command not git " or git config alias.<---> "your command not git "
+This can be done by `git config --global alias.<--> "Your command not git " ` or `git config alias.<---> "your command not git "`
 
 ` git config --global alias.s "status" `
 
