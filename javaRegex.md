@@ -15,6 +15,24 @@ The java Regex is an API which is used to define a pattern for searching or mani
 Patten class is the complied version of the regular expressoin that is used to match the patten inside string . 
 ![{07380F74-8AA9-4AB3-9946-A7C6E9D04FA6}](https://github.com/user-attachments/assets/04d89d20-b8e1-4490-8e8f-f16372bad214)
 
+# some examples 
+1. 10. Find All Digits in a String
+       example - String  str="The order number is 1234 and the code is 5678";
+
+solution -> 
+'''java 
+    public static void main(String[] args) {
+
+       
+        String  str="The order number is 1234 and the code is 5678";
+        Pattern p = Pattern.compile("[0-9]+");
+        Matcher m = p.matcher(str);
+        while(m.find()){
+            System.out.println(m.group());
+        }
+    }
+'''
+
 
 
 
