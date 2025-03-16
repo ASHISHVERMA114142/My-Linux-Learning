@@ -14,4 +14,19 @@ dipendency injection is the implementation of ioc ....
 # what is the differnce between controller and rest-controller ? 
 
 Controller  - it indicate that the class is responsible for handing incoming http requests . 
+``` java
+@Controller
+public class SampleController {
+  @RequestMapping(path="/fetchUser",method = RequestMethod.GET)
+  @ResponseBody
+  public String getUserDetails(){
+   return "fetching and returning user details";
+  }
+  @RequestMapping(path="/saveUser",method= RequestMethod.POST)
+  @ResponseBody
+  public String saveUserDetails(){
+    return "sucessfully saved the user details";
+ }
+}
+```
 
