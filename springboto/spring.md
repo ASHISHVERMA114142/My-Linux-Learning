@@ -8,4 +8,10 @@ dipendency injection is the implementation of ioc ....
 
 # Inversion of Control ( IoC)
 1. servlets dependends on the servlet container to create object and maintain lifecycle.  
-2. IoC is more flexible way to manage object dependencies and its lifeCycle ( though Dependency injection) ...   
+2. IoC is more flexible way to manage object dependencies and its lifeCycle ( though Dependency injection) ...
+
+
+# what is the differnce between controller and rest-controller ? 
+
+Controller  - it indicate that the class is responsible for handing incoming http requests . 
+
