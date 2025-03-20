@@ -1,16 +1,16 @@
 # General operation on redis 
-sudo apt-get install redis -> to install redis in your system 
-redis-server -> to start server 
-redis-cli -> to access redis cli 
-set <key> <value> -> to set key value pair 
-get <key> -> to get particular key value 
-del <key> -> to delete key with its associated value 
-exists <key> -> to check if key exists or not 
-keys * -> to list all the keys 
-flushall -> to flush all the key-value from the redis 
-ttl <key> -> to check key will be remain on the redis 
-expire <key> <time-in-sec> -> to expire key in redis after time 
-setex <key> <time> <value> -> to set key-value with expire time . 
+1. sudo apt-get install redis -> to install redis in your system 
+2. redis-server -> to start server 
+3. redis-cli -> to access redis cli 
+4. set <key> <value> -> to set key value pair 
+5. get <key> -> to get particular key value 
+6. del <key> -> to delete key with its associated value 
+7. exists <key> -> to check if key exists or not 
+8. keys * -> to list all the keys 
+9. flushall -> to flush all the key-value from the redis
+10. ttl <key> -> to check key will be remain on the redis 
+11. expire <key> <time-in-sec> -> to expire key in redis after time 
+12. setex <key> <time> <value> -> to set key-value with expire time . 
 
 # List in redis 
 1. lpush <key> value -> to push single value on the key
@@ -29,8 +29,11 @@ setex <key> <time> <value> -> to set key-value with expire time .
 5. srem <key> [val1, val2, val3,.....] -> to remove list of values
 
 #Hashes in redis 
+1. hset <key> <field-name> <field-value> -> to set the person field value that is name with value dew
+2. hget <key> <field-name> -> to get the particular field of the key
+3. hgetall <key> -> to get the particular key values
+4. hexist <key> <field-name> -> to check the particular field exists for the key
 
 # Rules in redis 
 1. set command stores key-value in string by default
 2. get command is only used for getting key-value of string only type
-3. 
