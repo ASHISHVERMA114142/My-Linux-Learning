@@ -268,3 +268,5 @@ public class SynchronizedDemo {
     }
 }
 ```
+@Log
+The majority of loggers require you to set up a logger instance in every class where you want to log. This definitely involves boilerplate code. By annotating a class with @Log, Lombok will automatically add a static final log field,
