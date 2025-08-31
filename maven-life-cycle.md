@@ -341,3 +341,12 @@ Log a message after cleaning completes successfully using the `maven-antrun-plug
 BUILD FAILURE
 Element type "echo" must be declared.
 ```
+# Dependencies scope
+| Scope        | Available In                          | Included in Artifact? | Typical Use Case                                                   |
+|--------------|----------------------------------------|------------------------|---------------------------------------------------------------------|
+| **compile**  | compile, test, runtime (all phases)    | Yes                    | Core libraries needed wherever—compile time, testing, runtime       |
+| **provided** | compile, test                          | No                     | APIs provided by the runtime environment (e.g., Servlet API)        |
+| **runtime**  | test, runtime                          | Yes                    | Libraries needed at runtime but not at compile-time (e.g., JDBC)    |
+| **test**     | test only                              | No                     | Testing frameworks (e.g., JUnit, Mockito)                           |
+| **system**   | compile, test (local only)             | No                     | Local-only JARs not in repositories (discouraged)                   |
+| **import**   | dependencyManagement (type="pom") only | No                     | Import BOMs or centralized dependency versions for multi‑module projects |
