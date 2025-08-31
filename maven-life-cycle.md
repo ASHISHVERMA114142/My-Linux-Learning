@@ -76,51 +76,44 @@ Possible Error:
 ```
 
 
-### 2. ** Complie phase **
+### 2. **Compile Phase**
 
-Purpose:
-Compiles the source code (typically from src/main/java) to .class files.
-Basically it compiles all java code the is present on current dir using selected javac. 
-What it does:
-Runs javac on source files
-Places output in target/classes/
+**Purpose:**  
+Compiles the source code (typically from `src/main/java`) into `.class` files.  
+Basically, it compiles all Java code in the project using the configured `javac`.
 
-### 3. ** Test Phase **
-
-Purpose:
-Runs unit tests in src/test/java using frameworks like JUnit/TestNG.
-What it does:
-Compiles test code
-Runs tests
-Fails the build if tests fail
-
-### 4. ** Test Phase **
-
-Purpose:
-Runs unit tests in src/test/java using frameworks like JUnit/TestNG.
-What it does:
-Compiles test code
-Runs tests
-Fails the build if tests fail
-
-### 5. ** Package phase **
-
-Purpose:
-Packages compiled code into an artifact (.jar, .war, .pom,ear , maven-plugin)
-What it does:
-Creates JAR/WAR using configurations in pom.xml
-Includes compiled classes and resources
-Fails when the <packaging>xyz</packaging> type is not match with the requrired types . 
-
-### 6. **Verify Phase **
+**What it does:**
+- Runs `javac` on source files
+- Places output in `target/classes/`
 
 
-Purpose:
-Runs additional checks (like integration tests or custom verifications).
-What it does:
-Runs extra plugins like maven-enforcer-plugin or integration tests
-Example failure:
-Using Enforcer plugin:
+---
+
+### 3. **Test Phase**
+
+**Purpose:**  
+Runs **unit tests** located in `src/test/java` using frameworks like **JUnit** or **TestNG**.
+
+**What it does:**
+- Compiles test source code
+- Executes unit tests
+- Fails the build if any tests fail
+
+---
+
+### 4. **Package Phase**
+
+**Purpose:**  
+Packages compiled code into a distributable artifact (`.jar`, `.war`, `.ear`, `.pom`, `maven-plugin`, etc.).
+
+**What it does:**
+- Uses configuration in `pom.xml` to determine packaging type
+- Packages compiled classes and resources into the defined format (e.g., JAR/WAR)
+- Places the artifact in the `target/` directory
+
+**Example failure:**
+Fails when the `<pac
+
 
 # Maven Verify Phase
 
