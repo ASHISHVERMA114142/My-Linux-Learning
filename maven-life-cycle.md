@@ -47,3 +47,27 @@ The **Validate** phase is the first phase in the Maven build lifecycle. Its main
     <artifactId>my-app</artifactId>
     <version>1.0-SNAPSHOT</version>
 </project>
+
+```xml
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-validate-plugin:...
+Missing required element 'groupId' in pom.xml
+
+## ❗ Example 2: Malformed XML in pom.xml
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0-SNAPSHOT</version
+</project>
+```xml
+[ERROR] Error parsing the pom.xml: Element type "version" must be followed by either attribute specifications, ">" or "/>".
+
+❗ Example 3: Invalid Project Structure
+
+Source code placed outside src/main/java
+
+Missing src folder
+
+Possible Error:
+
+[WARNING] No sources found at expected location: src/main/java
