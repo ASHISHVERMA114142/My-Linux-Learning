@@ -77,4 +77,58 @@ In HTTP/2 and HTTP/3, headers are **compressed using HPACK (HTTP/2)** or **QPACK
 - Enforce cross-origin policies (`Origin`, `Access-Control-*`)  
 :contentReference[oaicite:2]{index=2}
 
-**Common Request Headers**:  
+:contentReference[oaicite:4]{index=4}
+
+---
+
+## 2. HTTP Status Codes
+
+**Overview**:  
+Status codes are **three-digit numbers**, categorized by their first digit:
+- **1xx – Informational** (request accepted, process continues)  
+- **2xx – Success** (request successful)  
+- **3xx – Redirection** (further action required)  
+- **4xx – Client Errors** (problem with request)  
+- **5xx – Server Errors** (server cannot fulfill valid request)  
+:contentReference[oaicite:5]{index=5}
+
+**Key Status Codes to Know**:
+
+```markdown
+### 1xx – Informational  
+100 Continue – continue sending request body  
+101 Switching Protocols – agreed to change protocol (e.g., HTTP → WebSocket)  
+103 Early Hints – suggest resources to preload while processing  
+:contentReference[oaicite:6]{index=6}
+
+### 2xx – Success  
+200 OK – standard success response  
+201 Created – resource successfully created (e.g., POST)  
+202 Accepted – request accepted but not completed yet  
+204 No Content – success, no content to return  
+206 Partial Content – serving part of resource (e.g., byte ranges)  
+:contentReference[oaicite:7]{index=7}
+
+### 3xx – Redirection  
+301 Moved Permanently – update bookmarks to new URL  
+302 Found – temporary redirect  
+303 See Other – directs to a new resource using GET  
+304 Not Modified – use cached version of resource  
+:contentReference[oaicite:8]{index=8}
+
+### 4xx – Client Errors  
+400 Bad Request – malformed or invalid request  
+401 Unauthorized – authentication needed or failed  
+403 Forbidden – authenticated but no permission to access resource  
+404 Not Found – resource not found on server  
+429 Too Many Requests – rate limiting in effect  
+:contentReference[oaicite:9]{index=9}  
+:contentReference[oaicite:10]{index=10}
+
+### 5xx – Server Errors  
+500 Internal Server Error – generic unexpected server error  
+502 Bad Gateway – invalid response from upstream server  
+503 Service Unavailable – overloaded or under maintenance server  
+504 Gateway Timeout – upstream server did not respond in time  
+:contentReference[oaicite:11]{index=11}
+```
