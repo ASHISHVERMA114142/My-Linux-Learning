@@ -9,5 +9,6 @@
 9th https://leetcode.com/problems/move-zeroes/description/  
 10th https://leetcode.com/problems/sort-colors/description/  
 11th https://leetcode.com/problems/maximum-subarray/description/  
-12th https://leetcode.com/problems/permutation-in-string/description/ ( need to check again )
-13th 
+12th https://leetcode.com/problems/permutation-in-string/description/ ( need to check again )  
+13th https://leetcode.com/problems/number-of-substrings-with-only-1s/description/?envType=daily-question&envId=2025-11-16 (good concept about the inversion of number formual -> (number^(mod-2))%mod; )  
+14th 
