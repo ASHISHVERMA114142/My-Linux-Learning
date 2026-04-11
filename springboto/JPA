@@ -1,0 +1,61 @@
+ORM model and JPA 
+
+Basic defination 
+wha is ORM ?
+ans - Object Relational Mapping (ORM) in JPA is the core mechanism that bridges the gap between object-oriented domain models and relational databases, allowing developers to interact with database tables using Java objects instead of writing raw SQL.  
+
+what is JPA ?
+JPA (Java Persistence API) acts as the standard specification that defines the interfaces and annotations (such as @Entity, @Id, and @Table) used to describe this mapping, while ORM implementations like Hibernate, EclipseLink, or OpenJPA provide the actual code that performs the mapping and data persistence
+
+what are the key component of ORM ?
+
+Key Components of JPA ORM
+Annotations: JPA uses annotations like @Entity to mark classes as tables, @Id for primary keys, and relationship mappings like @OneToMany or @ManyToOne to define associations between entities. 
+Persistence Context: This acts as a cache (similar to an Object Grid) where retrieved entities are stored; changes made to these objects within the same transaction are tracked and synchronized with the database only upon commit. 
+CRUD Operations: Developers use the EntityManager interface to perform Create, Read, Update, and Delete operations on entities, which the underlying ORM provider translates into efficient SQL queries. 
+Mapping Files: While annotations are common, JPA also supports XML mapping files (orm.xml) to explicitly configure the mapping between Java class attributes and database columns without modifying the source code. 
+Relationship Between ORM, JPA, and Implementations
+Concept	Role	Examples
+ORM	The technique or approach of mapping objects to relational data stores. 	General concept of object-relational mapping.
+JPA	The specification (standard) that defines the API and rules for ORM in Java. 	Java Persistence API interfaces and annotations.
+Provider	The implementation that executes the JPA specification and handles the heavy lifting. 	Hibernate, EclipseLink, OpenJPA.
+By using JPA, developers can write database-independent code, making it easier to switch between different relational databases or ORM providers with minimal code changes, as the JPA standard ensures portability across implementations.
+
+Some more info about the h2 database 
+Create schema and insert data on initialization
+schema.sql – To initialize the schema ie.create tables and dependencies.
+
+data.sql – To insert default data rows.
+
+
+what are all the configuration that we use for our h2 database or ORM connection with the provider ?
+
+# database connnection properties
+spring.datasource.url=jdbc:h2:mem:userDB
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+
+# define package to scan
+# its completely optional , by default springboot scan for all @Entity but still if we want to scan particular package
+spring.jpa.package-to-scan=com.mySpringBoot.entity
+
+# define provider
+# its optional , spring automatically picks based on the provider
+spring.jpa.properties.javax.persistence.provider=org.hibernate.jpa.HibernatePersistenceProvider
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+
+# tranction type , default is RESOURCE_LOCAL only
+spring.jpa.properties.javax.persistence.transactionType=RESOURCE_LOCAL
+
+
+what is the meaning if the method is protected ?
+A method marked as protected in Java is accessible within its own class, any class in the same package, and subclasses even if they are in different packages.  It cannot be accessed by classes outside the package that are not subclasses. 
+
+Same Package Access: Any class within the same package can access the protected method directly. 
+Subclass Access: Subclasses can access the protected method regardless of their package location, allowing for inheritance-based functionality. 
+Restriction: Classes outside the package that do not inherit from the class containing the method cannot access it. 
+Overriding Rule: When overriding a protected method in a subclass, the overriding method must use either public or protected visibility; it cannot be more restrictive (e.g., private). 
+Class Limitation: While methods and variables can be protected, top-level classes and interfaces cannot be declared as protected. 
+
+
