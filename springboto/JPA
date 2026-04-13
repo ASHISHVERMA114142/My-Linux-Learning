@@ -1,61 +1,708 @@
-ORM model and JPA 
+1. presitence unit
+   logical grouping of entity classes which share same configuration
+   coniguration details like
+   database connectins properties
+   jpa provider ( hibernet etc ) etc.
 
-Basic defination 
-wha is ORM ?
-ans - Object Relational Mapping (ORM) in JPA is the core mechanism that bridges the gap between object-oriented domain models and relational databases, allowing developers to interact with database tables using Java objects instead of writing raw SQL.  
+2. EntityManagerFactory :-
+- using persistence unit configuration , EntityManagerFactory object get created during application startup
+- if any property is not provided , default one is picked and set
+- 1 EntityManagerFactory for 1 PersistenceUnit .
+- This class act as a Factory to create an object of EntityManager.
 
-what is JPA ?
-JPA (Java Persistence API) acts as the standard specification that defines the interfaces and annotations (such as @Entity, @Id, and @Table) used to describe this mapping, while ORM implementations like Hibernate, EclipseLink, or OpenJPA provide the actual code that performs the mapping and data persistence
+example -> LocalEntityManagerFactoryBean.java
 
-what are the key component of ORM ?
+what is we want to manually create and object of Entity Manger Factory ?
 
-Key Components of JPA ORM
-Annotations: JPA uses annotations like @Entity to mark classes as tables, @Id for primary keys, and relationship mappings like @OneToMany or @ManyToOne to define associations between entities. 
-Persistence Context: This acts as a cache (similar to an Object Grid) where retrieved entities are stored; changes made to these objects within the same transaction are tracked and synchronized with the database only upon commit. 
-CRUD Operations: Developers use the EntityManager interface to perform Create, Read, Update, and Delete operations on entities, which the underlying ORM provider translates into efficient SQL queries. 
-Mapping Files: While annotations are common, JPA also supports XML mapping files (orm.xml) to explicitly configure the mapping between Java class attributes and database columns without modifying the source code. 
-Relationship Between ORM, JPA, and Implementations
-Concept	Role	Examples
-ORM	The technique or approach of mapping objects to relational data stores. 	General concept of object-relational mapping.
-JPA	The specification (standard) that defines the API and rules for ORM in Java. 	Java Persistence API interfaces and annotations.
-Provider	The implementation that executes the JPA specification and handles the heavy lifting. 	Hibernate, EclipseLink, OpenJPA.
-By using JPA, developers can write database-independent code, making it easier to switch between different relational databases or ORM providers with minimal code changes, as the JPA standard ensures portability across implementations.
+```java
+import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-Some more info about the h2 database 
-Create schema and insert data on initialization
-schema.sql – To initialize the schema ie.create tables and dependencies.
+import javax.sql.DataSource;
 
-data.sql – To insert default data rows.
+@Configuration
+public class AppConfig {
+    @Bean
+    public DataSource dataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setDriverClassName("org.h2.Driver");
+        hikariDataSource.setJdbcUrl("jdbc:h2:mem:userDB");
+        hikariDataSource.setUsername("sa");
+        hikariDataSource.setPassword("");
+        return hikariDataSource;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setGenerateDdl(true);
+        adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+        return adapter;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaVendorAdapter adapter){
+        LocalContainerEntityManagerFactoryBean emf1 = new LocalContainerEntityManagerFactoryBean();
+        emf1.setDataSource(dataSource);
+        emf1.setJpaVendorAdapter(adapter);
+        emf1.setPackagesToScan("com.myspringboot.application.xyz");
+        emf1.setPersistenceUnitName("uniqueFactoryName");
+        return emf1;
+    }
+}
+```
+
+3. Transaction Manager association with EntityManagerFactory
+
+During the persistence unti , we have to specified the value of "transaction-type" value either
+1. RESOURCE_LOCAL ( default )
+2. JTA ( java transaction API )
+
+Transaction Manager could be of 2 types
+1. Manager, which managing transaction for 1 DB
+2. Manager , which managing transaction which can span across multiple DB, that's also possible using JTA.
+
+Druing application startup , after EntityManagerFactory object created based on RESOURCE_LOCAL or JTA , transaction manager object get created .
+
+use case 1.
+transaction manager that will manage txn with one DB
+
+how we can create that .
+
+```java
+import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.hibernate.HibernateExceptionTranslator;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+
+import javax.sql.DataSource;
+
+@Configuration
+public class AppConfig {
+    @Bean
+    public DataSource dataSource() {
+        HikariDataSource hikariDataSource = new HikariDataSource();
+        hikariDataSource.setDriverClassName("org.h2.Driver");
+        hikariDataSource.setJdbcUrl("jdbc:h2:mem:userDB");
+        hikariDataSource.setUsername("sa");
+        hikariDataSource.setPassword("");
+        return hikariDataSource;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        adapter.setGenerateDdl(true);
+        adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+        return adapter;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(DataSource dataSource, JpaVendorAdapter adapter) {
+        LocalContainerEntityManagerFactoryBean emf1 = new LocalContainerEntityManagerFactoryBean();
+        emf1.setDataSource(dataSource);
+        emf1.setJpaVendorAdapter(adapter);
+        emf1.setPackagesToScan("com.myspringboot.application.xyz");
+        emf1.setPersistenceUnitName("uniqueFactoryName");
+        return emf1;
+    }
+
+    //    new config extra from the previous one .
+    @Bean
+    public JpaTransactionManager jpaTransactionManager(EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
+    }
+}
+```
+4. EntityManager and persistence context .
+
+EntityManager :-
+its an iterface that jpa provides method for the basic CRUD operation on entites .
+like
+1. persist() for saving
+2. merge() for updating
+3. find of fetching
+4. remove() for deleting
+5. createQuery() ( for executing JPQL queries )
+
+EntityManager interface methods are implemented by jpa vendors like hibernet etc.
+EntityManagerFactory helps to create an object of EntityManager
+
+PersistenceContext :
+consider it as first level cache
+for each entity manger , one persistContext object is created , which hold list of entites its working on . also manages the lifecycle of entity
+
+Entity manager insert/update/delete operations are transaction bounded. Means, it first check if "transaction" open if not it will thorw an exception .
+
+### how the first level caching works
+The JPA first-level cache, also known as the Persistence Context, is automatically enabled and mandatory for every EntityManager.  It acts as a session-scoped cache that stores managed entity instances within the current transaction, ensuring that only one instance of a specific entity with a given ID exists in memory at any time.
+
+How it operates:
+
+When an entity is loaded via find() or persist(), it is stored in an internal HashMap (the cache) keyed by the entity name and identifier.
+Subsequent requests for the same entity within the same transaction retrieve the object directly from this cache rather than executing a new SQL query.
+The cache guarantees application-level repeatable reads, meaning modifications made to an entity (e.g., o.setComment("hello")) are immediately visible to all references of that entity within the transaction.
+Lifecycle and Scope:
+
+The cache is bound to the current Hibernate Session (or EntityManager) and exists only for the duration of the transaction.
+It is not shared between different transactions or EntityManager instances; a new transaction starts with a fresh, empty cache.
+The cache is automatically cleared when the transaction commits, rolls back, or the EntityManager is closed.
+Developers can manually clear the cache using EntityManager.clear() or refresh a specific entity using EntityManager.refresh().
+Key Benefits:
+
+Performance: Significantly reduces database load by preventing repeated SQL queries for the same entity within a single unit of work.
+Data Consistency: Ensures that all code within the transaction sees the same, updated state of an entity.
+Transaction Management: Works seamlessly with @Transactional annotations, where each method in a separate transaction gets its own isolated cache.
 
 
-what are all the configuration that we use for our h2 database or ORM connection with the provider ?
+### Note
+EntityManager is created for each HTTP Request . so different method within the same HTTP Request share the EntityManager.
 
-# database connnection properties
-spring.datasource.url=jdbc:h2:mem:userDB
-spring.datasource.driver-class-name=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
+### second level caching
+```properties
+spring.jpa.properties.hibernate.cache.use_second_level_cache=true
+# This tell Hibernate to use hibernate-jcache class to manage caching , we can also provide here direct ehcache factory class, means bypassing Jcache interface
+spring.jpa.properties.hibernate.cache.region.factory_class=org.hibernate.cache.jcache.JCacheRegionFactory
+spring.jpa.properties.javax.cache.provider=org.ehcache.jsr107.EhcacheCachingProvider
+logging.level.org.hibernate.cache.spi=DEBUG
+```
+what are all the dependencies are requeired in the pom.xml
 
-# define package to scan
-# its completely optional , by default springboot scan for all @Entity but still if we want to scan particular package
-spring.jpa.package-to-scan=com.mySpringBoot.entity
+```xml
+<!--provides core level implementation of second level caching-->
+<dependency>
+    <groupId>org.ehcache</groupId>
+    <artifactId>ehcache</artifactId>
+</dependency>
 
-# define provider
-# its optional , spring automatically picks based on the provider
-spring.jpa.properties.javax.persistence.provider=org.hibernate.jpa.HibernatePersistenceProvider
-spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+        <!--Hibernate specific Caching logic comes with this , like we use Annotations over entity @Cache, we used CacheConcurrencyStrategy so specific logic need to be executed and this library help us with that-->
+<dependency>
+<groupId>org.hibernate</groupId>
+<artifactId>hibernet-jcache</artifactId>
+</dependency>
 
-# tranction type , default is RESOURCE_LOCAL only
-spring.jpa.properties.javax.persistence.transactionType=RESOURCE_LOCAL
+        <!--Provides the interface for jcache , hibernate interact with these APIs, Helps to achieve loose coupling , we can change from Ehcache to some other Jcache compliant caching provider without changing code-->
+<dependency>
+<groupId>org.ehcache</groupId>
+<artifactId>ehcache</artifactId>
+</dependency>
+
+```
+
+So the flow is something like this                                    implementaiton
+<Hibernate> ----> <hibernate-jcache> ----> <jcache apis interfaces> ---->  <ehcache> or <caffeine> or <hazelcast>
+
+### Region
+This helps in logical grouping of cached data.
+For each region ( or say group ) we can apply different caching strategy like
+- Eviction policy
+- TTL
+- Cache Size
+- Concurrency strategy etc.
+
+which help in achieving granular level management of cached data ( either Enitty , Collection or Query Results)
+
+```java
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import org.hibernate.annotations.CacheConcurrencyStrategy;[//]: # basic example how we can enable second level caching on the java code level()
+
+@Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE,
+        region = "userDetailsCache")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GeneratonType.IDENTITY)
+    private Long id;
+    private String userName;
+    private Integer userAge;
+}
+
+@Entity
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE, region = "orderDetailsCache")
+public class OrderDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long orderId;
+    private String orderName;
+    private double price;
+    private int quantity;
+}
+```
+
+if we want to have more granular level of details like handling of timeout time , maxelement in memory , evictionStrategy then we can use ehcache.xml file that will contains info for each region that we are defining in our application . this helps to control the behavior of the second level caching
+
+example:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
+         updateCheck="false"
+         dynamicConfig="true">
+
+    <!-- Where to store overflow data if disk storage is enabled -->
+    <diskStore path="java.io.tmpdir" />
+
+    <!-- Default cache configuration applied if a specific name is not found -->
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="true"
+            maxElementsOnDisk="100000"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU" />
+
+    <!-- A specific cache configuration -->
+    <cache name="userDetailsCache"
+           maxElementsInMemory="1000"
+           eternal="false"
+           timeToIdleSeconds="300"
+           timeToLiveSeconds="600"
+           overflowToDisk="false"
+           memoryStoreEvictionPolicy="LRU" />
+</ehcache>
+
+```
+
+### CacheConcurrencyStrategy
+1. READ_ONLY
+2. READ_WRITE
+3. NONSTRICT_READ_WRITE
+4. TRANSACTIONAL
+
+1. READ_ONLY -
+- good for static data
+- which do not require any updates
+- if try to update just entity, exception will come
+
+2. READ_WRITE
+- During read operation it will put share lock so that other read operation can acquire that shared lock, but no write operation
+- During update, it put exclusive lock other read and write operation not allowed .
+
+3. NONSTRICT_READ_WRITE
+- during the read operation no lock is acquired
+- during update , after txn commit successful , cache is marked invalidated and not updated with freash data
+- good for heavy read operation
+- so if update and read happens in parallel , its a chance that read operation get the stale data.
+
+4. TRANSACTIONAL
+- acquire READ lock and also WRITE lock.
+- update the cache too, after txn commit successfully.
+- any other READ operation during cache lock , goes directly to DB.
+- any other WRITE operation during cache lock waits in queue.
 
 
-what is the meaning if the method is protected ?
-A method marked as protected in Java is accessible within its own class, any class in the same package, and subclasses even if they are in different packages.  It cannot be accessed by classes outside the package that are not subclasses. 
+### JPA DTO and TABLE
 
-Same Package Access: Any class within the same package can access the protected method directly. 
-Subclass Access: Subclasses can access the protected method regardless of their package location, allowing for inheritance-based functionality. 
-Restriction: Classes outside the package that do not inherit from the class containing the method cannot access it. 
-Overriding Rule: When overriding a protected method in a subclass, the overriding method must use either public or protected visibility; it cannot be more restrictive (e.g., private). 
-Class Limitation: While methods and variables can be protected, top-level classes and interfaces cannot be declared as protected. 
+spring.jpa.hibernate.ddl-auto configuration tells hibernate regarding how to create and manage the database schema
+
+1. none -> do nothing good for production
+2. update -> does update but without deleting any existing data or schema good of development env
+3. validate -> during the application startup does matching between entities and DB schema , if mismatch found throws exception
+4. create -> drops and recreate the schema during the application startup.
+5. create-drop -> creates schema during the application startup and drops the schema when the application shutdown .
+
+1. How Indexes Work in the DB
+   Think of a database index exactly like the index at the back of a book.
+
+Without an index (Table Scan): If you want to find a specific topic in a book and there is no index, you have to read every single page from the beginning until you find it. In a database, this is called a Full Table Scan, which is very slow if your table has millions of rows.
+With an index: You look up the topic in the index, see the exact page number, and jump straight to it.
+Under the hood: Databases typically use data structures like B-Trees (Balanced Trees) or Hash Tables to store indexes. When you index a column (e.g., email), the database stores the email values in a sorted tree structure along with a pointer to the physical memory location of the entire row.
+The Trade-off: Indexes drastically speed up SELECT (read) queries, but they slow down INSERT, UPDATE, and DELETE (write) operations because the database has to update the index tree every time the data changes. They also take up extra disk space.
+
+3. Benefits of Using @Table to Create Indexes
+   Automated Schema Generation: If you are using Hibernate's hbm2ddl.auto (e.g., update or create), Hibernate will automatically generate the CREATE INDEX SQL statements and apply them to your database. You don't have to write manual SQL scripts.
+   Code as Documentation: Any developer looking at the Employee entity immediately knows which columns are optimized for querying. The database schema logic remains tightly coupled with the Java code, acting as a single source of truth.
+   Optimized Queries: Defining composite indexes (last_name, first_name) natively translates to the DB, heavily optimizing queries like findByLastNameAndFirstName(String last, String first).
+   Environment Consistency: It ensures that every time the app is spun up on a new environment (like a local H2 in-memory DB for testing), the indexes are created, ensuring your tests behave similarly to production.
 
 
+Mapping classes to Tables,
+- its an  optional field , if not defined hibernate will generate table name based on entity name only .
+- generally it follows camelCase to UPPER_SNAKE_CASE
+
+
+Few examples:
+
+```java
+import jakarta.persistence.Entity;
+
+@Table(name = "USER_DETAILS")
+@Entity
+public class UserDetails{
+    // some fields for userDetails class
+}
+```
+
+what is the use of Schema ?
+In database terminology, a schema is essentially a logical namespace or container that holds database objects like tables, views, indexes, and stored procedures.
+
+Here is why you would create and use a schema in your database (and by extension, specify it in your JPA @Table(schema = "my_schema") annotation):
+
+1. Logical Grouping & Organization
+   If your application is large, you might have hundreds of tables. Organizing them into schemas acts like folders in a file system.
+
+Example: You might have tables inside an hr schema (hr.employees, hr.departments) and tables inside an inventory schema (inventory.products, inventory.shipments).
+2. Avoiding Name Collisions
+   Different modules of an application might want to use the same table name. A schema prevents naming conflicts.
+
+Example: The HR system and the payroll system might both need a table named User. You can safely create hr.user and payroll.user in the same database without them overwriting each other.
+3. Security and Access Control
+   Schemas are a great boundary for assigning permissions. You can grant different database users access to different schemas.
+
+Example: You can give a "Reporting App" read-only access to only the analytics schema, preventing it from accidentally deleting or reading sensitive password data stored in the security schema.
+4. Multi-tenancy (SaaS Apps)
+   If you are building an application where multiple clients (tenants) use the same database, one common architecture is a schema-per-tenant approach.
+
+Client A connects and all their data goes to client_a_schema.orders.
+Client B connects and their data goes to client_b_schema.orders. This keeps client data completely logically separated while still using a single physical database instance.
+Summary in JPA
+If you don't explicitly specify a schema (e.g., just using @Table(name="USER_DETAILS")), the database assumes the default schema for the connected user (like public in PostgreSQL or dbo in SQL Server). If your company strictly organizes DBs by schema, you specify it like this:
+
+```java
+import jakarta.persistence.Entity;
+
+@Table(name = "userDetails", schema = "userSchema")
+@Entity
+public class UserDetails{
+    // some feilds about the user...
+}
+```
+
+what is the use of uniqueConstraints ?
+A unique constraint is a database rule that ensures that all values in a specific column (or a combination of columns) are completely distinct from one another across the entire table. Its primary use is to guarantee data integrity and enforce strict business rules directly at the database level. While your application code might check if a value already exists before saving, race conditions (where two users submit the exact same data at the exact same millisecond) can cause the application check to fail. A unique constraint acts as an impenetrable safety net; the database itself will simply reject the second insert and throw a constraint violation exception, absolutely preventing duplicate data from ever being stored.
+
+A classic real-world example is a user registration system. Your User table might have an auto-generated primary key (like a UUID or an auto-incrementing ID), but you also must ensure that no two users can register with the exact same email address. By placing a unique constraint on the email column, you guarantee that even if your web server experiences a bug or a simultaneous submission, the database will never allow two identical emails.
+
+Another excellent example is a composite unique constraint, which involves multiple columns together. Imagine a movie ticketing system where you have a SeatReservation table. A single user can book many seats, and a single seat can be booked many times (for different show times), but for a specific movie screening, a specific seat can only be booked exactly once. You would create a unique constraint on the combination of (screening_id, seat_number). This ensures that nobody can double-book a seat for the exact same show, flawlessly avoiding angry customers showing up to the same chair.
+
+In JPA, building upon the @Table annotation we looked at earlier, you can enforce this automatically during schema generation like this:
+
+```java
+import jakarta.persistence.UniqueConstraint;
+
+@Entity
+@Table(
+        name = "seat_reservations",
+        schema = "ticket_hall",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_screening_seat",
+                        columnNames = {"screening_id", "seat_number"}
+                ),
+                @UniqueConstraint(name= "seat_number",
+                        columnNames = {"seat_number"}
+                )
+        }
+)
+public class SeatReservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "screening_id")
+    private Long screeningId;
+
+    @Column(name = "seat_number")
+    private String seatNumber;
+
+    // other fields...
+}
+
+```
+example of indexes
+```java
+import jakarta.persistence.UniqueConstraint;
+
+@Entity
+@Table(
+        name = "seat_reservations",
+        schema = "ticket_hall",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_screening_seat",
+                        columnNames = {"screening_id", "seat_number"}
+                ),
+                @UniqueConstraint(name= "seat_number",
+                        columnNames = {"seat_number"}
+                )
+        },
+        indexes ={
+                @index(name = "index_seat", columnList = "seat_number"),
+                @index(name="index_screeningId" , columnList = "screening_id")
+        }
+)
+public class SeatReservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "screening_id")
+    private Long screeningId;
+
+    @Column(name = "seat_number")
+    private String seatNumber;
+
+    // other fields...
+}
+```
+
+### column field
+  - its optional jpa will add this automatically with the default values
+    The @Column annotation allows you to map a Java field directly to a specific column in a database table and define exactly how that column should behave. While it is optional (JPA will just use the Java variable name and default settings if omitted), it is highly recommended to use it for explicit schema definition.
+
+Here are the most commonly used properties inside @Column:
+
+1. name Defines the exact name of the column in the database.
+
+Default: The name of the Java variable (Spring Boot usually converts camelCase to snake_case automatically, so firstName becomes first_name).
+Example: @Column(name = "user_email_address")
+2. unique A boolean that specifies whether this single column should have a unique constraint.
+
+Default: false
+Note: This is a shorthand for single-column constraints. If you need a composite unique constraint (covering 2 or more columns together), you must use @Table(uniqueConstraints = ...) instead.
+Example: @Column(unique = true)
+3. nullable A boolean that specifies if the database column allows NULL values.
+
+Default: true
+Note: Setting it to false automatically generates a NOT NULL constraint in the database. It is best practice to set nullable = false for required fields.
+Example: @Column(nullable = false)
+4. length Specifies the maximum character length of the column. This is primarily used for String variables.
+
+Default: 255
+Note: It defines the VARCHAR(length) in the database. If you try to save a string longer than this, the database will throw a data truncation error.
+Example: @Column(length = 50)
+5. updatable A boolean that tells JPA whether this column should be included in generated UPDATE SQL statements.
+
+Default: true
+Note: If set to false, once the entity is created, JPA will ignore any changes to this field during subsequent saves. This is extremely useful for audit fields like created_at or created_by that should never change after the initial insert.
+Example: @Column(updatable = false)
+6. insertable A boolean that tells JPA whether this column should be included in generated INSERT SQL statements.
+
+Default: true
+Note: If set to false, JPA will ignore this field when creating a new row. Typically used when the database itself generates the value (e.g., via a DB trigger or a default value).
+Example: @Column(insertable = false)
+7. columnDefinition Allows you to provide a raw SQL fragment that is used when generating the DDL (Data Definition Language) for the column.
+
+Default: Empty
+Note: Extremely useful when you need a specific database type that JPA doesn't map to easily (like TEXT or JSONB in Postgres, or explicit default values).
+Example: @Column(columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'") or @Column(columnDefinition = "TEXT")
+
+What is a Sequence?
+In a database (like PostgreSQL, Oracle, or SQL Server), a Sequence is an independent database object that generates a sequence of numeric values. Unlike an AUTO_INCREMENT or IDENTITY column which is hard-tied to one specific table, a sequence exists on its own. You ask the database for the "next value" from the sequence, and it hands you a number, guaranteeing that it won't give that exact number to any other transaction.
+
+How does GenerationType.SEQUENCE work in JPA?
+When you use the sequence strategy, Hibernate asks the database sequence for the next available ID before it actually executes the INSERT statement.
+
+To use it effectively, you typically pair @GeneratedValue with the @SequenceGenerator annotation so you can customize how it behaves.
+
+```java
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.SequenceGenerator;
+
+@Entity
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "emp_generator")
+    @SequenceGenerator(
+        name = "emp_generator",              // The name referenced in @GeneratedValue
+        sequenceName = "employee_id_seq",    // The actual name of the sequence in the Database
+        initialValue = 1000,                 // Start generating IDs from 1000
+        allocationSize = 50                  // How many IDs Hibernate pre-fetches at once (Crucial!)
+    )
+    /*
+            name - its unique name , internal for JPA, we can use it in different entity
+            sequeneName - its name which is created in DB. or if you have manually created sequence in DB, then use that name here 
+            initialValue: sequence no starts from here
+            allocationSize : cache data , hibernate prefetch this much ids before hand , so that it will not query DB again and again 
+     */
+    private Long id;
+
+    // other fields...
+}
+
+```
+Why use SEQUENCE over IDENTITY? (The Performance Benefit)
+The biggest advantage of SEQUENCE over GenerationType.IDENTITY (which maps to MySQL's AUTO_INCREMENT) is Batch Insertion.
+
+The problem with IDENTITY: If you want to save 100 Employee objects at once, Hibernate has to execute 100 separate INSERT statements immediately. Why? Because the only way the database will generate the ID is if the row is physically inserted. Hibernate needs that ID to manage the entity, so it cannot group the inserts together.
+The magic of SEQUENCE and allocationSize: Notice allocationSize = 50 in the example above. When Hibernate needs an ID to save a new Employee, it calls the database sequence once and asks for 50 IDs upfront. The database sequence jumps its internal counter by 50 and gives Hibernate a block of IDs to use. Now, Hibernate holds these 50 IDs in memory. It can assign them to 50 Employee objects and then send a single, highly-optimized Batch INSERT statement to the database containing all 50 rows at once. This drastically reduces network round-trips and speeds up bulk inserts.
+Summary
+If your underlying database supports sequences (like PostgreSQL, Oracle, or modern SQL Server), GenerationType.SEQUENCE is highly recommended over IDENTITY because it decouples ID generation from row insertion, enabling massive performance optimizations through JDBC batching. (Note: MySQL historically did not support true sequences, forcing developers to use IDENTITY or TABLE generation, though newer versions have introduced sequence support).
+
+
+### @Id annotation and @GeneratedValue annotation
+
+Primary key - must be unique and one table can have only one primary key .
+- @Id annotation will mark that particular field as primary key
+- only one field is marked as primary key
+- each entity can have only 1 primary key
+
+Composite Primary key - combinatin of two or more colums to form a primary key
+
+1. usng @Embeddable and EmbeddedId annotion
+2. using @IdClass and @Id annotation
+
+Rules of crating composite key
+- should be public class
+- must implement the serializale interface
+- must have no-arg constructor
+- must override the equals() and hashcode() methods
+- 
+1. using Embeddable and EmbeddedId -> for the composite key we have to crate one new class that will contain the composite key fields we have to mark that as @Embeddable so that spring will know that this could be a primary key .
+
+```java
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+
+import java.io.Serializable;
+
+@Embeddable
+public class UserDetailsCK implements Serializable {
+    private String name;
+    private String address;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (!(obj is instanceOf UserDetailsCK)){
+            return false;
+        }
+        UserDetailsCK userDetailsCK = (UserDetailsCK) obj;
+        return this.name.equals(userDetailsCK.name) && this.address.equals(userDetailsCK.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Object.hash(name, address);
+    }
+}
+
+@Table(name = "UserDetails", region = "userResion")
+@Entity
+public Class UserDetails{
+    @EmbeddedId
+    UserDetailsCK userDetailsCK;
+    private String phone;
+    public UserDetails(){
+        
+    }
+    // getters ans setters 
+}
+```
+
+2. Using the @IdClass and @Id
+
+```java
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Table;
+
+import java.io.Serializable;
+
+public class UserDetailsCk implements Serializable {
+
+    private String name;
+    private String address;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceOf UserDetailsCk)){
+            return false;
+        }
+        UserDetailsCk userDetailsCk = (UserDetailsCk) obj;
+        return this.name.equals(userDetailsCk.name) && this.address.equals(userDetailsCk.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, address);
+    }
+}
+@Table(name = "userDetails", region = "userRegion")
+@Entity
+@IdClass(UserDetailsCk.class)
+public class UserDetails{
+    @Id
+    private String name;
+    @Id
+    private String address;
+    private String phone;
+}
+```
+
+So there are two question that we should take care 
+
+1. why we used to override the hashCode() and equals() method
+  - we know that JPA internally maintains first level cache 
+  - also we can implement the second level cache
+  - and these caching uses hashMap and which relies on key ( generally on primary key that becomes the key of hashMap) so proper equals() and hashCode() method is required.
+
+2. why we need to override the Serializable interface ?
+
+    - Unlike single Primary key like String , long etc. composite key are custom classes.
+    -  so jpa need to make sure that those class should be properly serializable ( in case if requeired like transfer over the network n case of distributed caching )
+
+
+@GeneratedValue annotation 
+
+- how we give values the primary key 
+  - but we can also define the generation strategy too, by default , primary key columns are not autofill.
+  - it works with @Id annotation ( only for single primary key not for the compose primary key)
+
+1. GenerationType.IDENTITY
+  - each insertion , generates a new identifier ( auto increment field)
+
+2. GenerationType.SEQUENCE
+  - userd to generate unique numbers
+  - speed up the efficiency when we cache sequence values 
+  - more control over identity
+
+```java
+
+import jakarta.persistence.*;
+
+@Table(name = "userDetails")
+@Entity
+
+/*
+        name : name is the unique name for the sequence 
+        sequenceName : its a name which is created in DB , or if you have manually created the sequence in DB, then use the name here 
+        initialvalue : seq. no starts from
+        allocationSize : cache data , hibernate prefetch this much ides before hand so that it will not query DB again and again 
+ */
+public class UserDetails {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name= "unique-user-seq", sequenceName = "db-seq-name", initialValue = 100, allocationSize = 10)
+    private Long id;
+    private String name;
+    private String address;
+    private String phone;
+}
+```
+
+
+================================================================================= One to one unidirectional ===================================================================================================================================
